@@ -1,6 +1,6 @@
 # [Tribbie](https://honkai-star-rail.fandom.com/wiki/Tribbie) ([Tribios](https://honkai-star-rail.fandom.com/wiki/Tribios))
 
-Tribbie is a tool that creates [Bruno](https://www.usebruno.com/)/[Insomnia](https://insomnia.rest/)/(Postman)[https://www.postman.com/web] collections based on a (set of) given [ATProto](https://atproto.com/) [lexicons](https://atproto.com/specs/lexicon)
+Tribbie is a tool that creates [Bruno](https://www.usebruno.com/)/[Insomnia](https://insomnia.rest/)/[Postman](https://www.postman.com/web) collections based on a (set of) given [ATProto](https://atproto.com/) [lexicons](https://atproto.com/specs/lexicon)
 
 ## Usage
 
