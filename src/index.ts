@@ -1,4 +1,4 @@
-import * as dns from "dns";
+import * as dns from "dns/promises";
 
 enum Lexicons {
     APP_BSKY = "app.bsky.actor",
@@ -11,18 +11,67 @@ enum Lexicons {
     // COM_WHTWND = "https://github.com/whtwnd/whitewind-blog/tree/main/lexicons",
 }
 
-const resolveTxt = (domain: string) => {
-    const records = dns.resolveTxt(domain, (err, records) => {
-        records.forEach((record) => console.log(record));
-    });
+const resolveTxt = async (domain: string): Promise<string> => {
+    let res = "";
+    return dns
+        .resolveTxt(domain)
+        .then((records) => {
+            records.forEach((record) => {
+                record.forEach((segment) => {
+                    if (segment.startsWith("did=")) {
+                        const kvp = segment.split("=");
+                        if (kvp.length >= 2) {
+                            res = kvp[1] as string;
+                        }
+                    }
+                });
+            });
+        })
+        .then(() => {
+            if (res != "") return res;
+
+            throw new Error(`No DID record found at ${domain}`);
+        });
 };
 
-const main = () => {
+interface PlcDirectoryResponse {
+    id: string;
+    alsoKnownAs: Array<string>;
+    verificationMethod: Array<{
+        id: string;
+        type: string;
+        controller: string;
+        publicKeyMultibase: string;
+    }>;
+    service: Array<{
+        id: string;
+        type: string;
+        serviceEndpoint: string;
+    }>;
+}
+
+const resolveDidToPds = async (did: string) => {
+    const req = new Request(`https://plc.directory/${did}`);
+    const res = await fetch(req);
+    const data = (await res.json()) as PlcDirectoryResponse;
+    return data.service[0] ? data.service[0].serviceEndpoint : "";
+};
+
+const main = async () => {
     const lexiconDomains = Object.values(Lexicons);
-    lexiconDomains.forEach((domain) => {
-        const mirrored = domain.split(".").reverse().join(".");
-        resolveTxt(`_lexicon.${mirrored}`);
-    });
+    const didRecords = await Promise.all(
+        lexiconDomains.map(async (domain) => {
+            const mirrored = domain.split(".").reverse().join(".");
+            const res = await resolveTxt(`_lexicon.${mirrored}`);
+            return res;
+        }),
+    );
+
+    const pdsUrls = await Promise.all(
+        didRecords.map((did) => resolveDidToPds(did)),
+    );
+
+    console.log(pdsUrls);
 };
 
-main();
+main().then();
