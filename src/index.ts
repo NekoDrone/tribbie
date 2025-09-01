@@ -57,6 +57,28 @@ const resolveDidToServiceUrl = async (did: string) => {
     return data.service[0] ? data.service[0].serviceEndpoint : "";
 };
 
+interface ComAtprotoLexiconSchemaResponse {
+    id: string;
+    $type: string;
+    lexicond: number;
+    defs: unknown; // TODO: actually implement this
+}
+
+interface ComAtprotoRepoListRecordsResponse {
+    uri: string;
+    cid: string;
+    value: ComAtprotoLexiconSchemaResponse;
+}
+
+const listLexicons = async (did: string, serviceEndpoint: string) => {
+    const req = new Request(
+        `${serviceEndpoint}/xrpc/com.atproto.repo.listRecords?repo=${did}&collection=com.atproto.lexicon.schema`,
+    );
+    const res = await fetch(req);
+    const data = (await res.json()) as Array<ComAtprotoRepoListRecordsResponse>;
+    return data;
+};
+
 const main = async () => {
     const lexiconDomains = Object.values(Lexicons);
     const didRecords = await Promise.all(
@@ -67,11 +89,20 @@ const main = async () => {
         }),
     );
 
-    const pdsUrls = await Promise.all(
-        didRecords.map((did) => resolveDidToServiceUrl(did)),
+    const serviceUrls = await Promise.all(
+        didRecords.map(async (did) => {
+            const serviceUrl = await resolveDidToServiceUrl(did);
+            return { did, serviceUrl };
+        }),
     );
 
-    console.log(pdsUrls);
+    const lexicons = await Promise.all(
+        serviceUrls.map(async (pairs) => {
+            return await listLexicons(pairs.did, pairs.serviceUrl);
+        }),
+    );
+
+    console.log(lexicons);
 };
 
 main().then();
