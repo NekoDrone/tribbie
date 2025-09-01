@@ -50,7 +50,7 @@ interface PlcDirectoryResponse {
     }>;
 }
 
-const resolveDidToPds = async (did: string) => {
+const resolveDidToServiceUrl = async (did: string) => {
     const req = new Request(`https://plc.directory/${did}`);
     const res = await fetch(req);
     const data = (await res.json()) as PlcDirectoryResponse;
@@ -68,7 +68,7 @@ const main = async () => {
     );
 
     const pdsUrls = await Promise.all(
-        didRecords.map((did) => resolveDidToPds(did)),
+        didRecords.map((did) => resolveDidToServiceUrl(did)),
     );
 
     console.log(pdsUrls);
