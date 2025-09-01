@@ -6,7 +6,8 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "tribbie/generate": "build && node index.js"
+        "build": "tsc",
+        "tribbie/generate": "pnpm build && node dist/index.js"
     },
     "keywords": [],
     "author": "Sylfr Serenity Tan <syl@sylfr.dev>",
