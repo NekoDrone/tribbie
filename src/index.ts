@@ -1,9 +1,8 @@
-import * as dns from "dns/promises";
 import {
     listLexicons,
     resolveDidToServiceUrl,
     resolveTxt,
-} from "./lib/helpers";
+} from "@/lib/helpers.js";
 
 const lexiconCollections = {
     APP_BSKY: "app.bsky.actor",
@@ -38,6 +37,8 @@ const main = async () => {
             return await listLexicons(pairs.did, pairs.serviceUrl);
         }),
     );
+
+    console.log(lexicons[0]?.records[0]?.value.defs.main?.description);
 };
 
 main().then();

@@ -1,3 +1,5 @@
+import { LexDefinition } from "@/lib/lexicon.js";
+
 export interface PlcDirectoryResponse {
     id: string;
     alsoKnownAs: Array<string>;
@@ -18,7 +20,7 @@ export interface ComAtprotoLexiconSchemaResponse {
     id: string;
     $type: string;
     lexicon: number;
-    defs: unknown; // TODO: actually implement this
+    defs: Record<"main" | string, LexDefinition>;
 }
 
 export interface ComAtprotoRepoListRecordsResponse {
