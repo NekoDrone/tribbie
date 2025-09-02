@@ -2,7 +2,7 @@ import {
     listLexicons,
     resolveDidToServiceUrl,
     resolveTxt,
-} from "@/lib/helpers.js";
+} from "@/lib/helpers";
 
 const lexiconCollections = {
     APP_BSKY: "app.bsky.actor",

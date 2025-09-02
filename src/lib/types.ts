@@ -1,4 +1,4 @@
-import { LexDefinition } from "@/lib/lexicon.js";
+import { LexDefinition } from "@/lib/lexicon";
 
 export interface PlcDirectoryResponse {
     id: string;

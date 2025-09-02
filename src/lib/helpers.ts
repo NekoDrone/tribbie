@@ -2,7 +2,7 @@ import * as dns from "dns/promises";
 import type {
     ComAtprotoRepoListRecordsResponse,
     PlcDirectoryResponse,
-} from "@/lib/types.js";
+} from "@/lib/types";
 
 export const resolveTxt = async (domain: string): Promise<string> => {
     let res = "";
