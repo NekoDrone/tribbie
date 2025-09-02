@@ -294,7 +294,7 @@ export type PropertiesDef =
     | BoolPropertiesDef
     | IntegerDefaultPropertiesDef
     | IntegerConstPropertiesDef
-    | IntegerConstPropertiesDef
+    | IntegerPropertiesDef
     | StringDefaultPropertiesDef
     | StringConstPropertiesDef
     | StringPropertiesDef
