@@ -1,4 +1,9 @@
 import * as dns from "dns/promises";
+import {
+    listLexicons,
+    resolveDidToServiceUrl,
+    resolveTxt,
+} from "./lib/helpers";
 
 const lexiconCollections = {
     APP_BSKY: "app.bsky.actor",
@@ -9,74 +14,6 @@ const lexiconCollections = {
     // PLACE_STREAM : "https://github.com/streamplace/streamplace/tree/next/lexicons",
     // SOCIAL_GRAIN : "https://github.com/grainsocial/grain/tree/main/lexicons",
     // COM_WHTWND : "https://github.com/whtwnd/whitewind-blog/tree/main/lexicons",
-};
-
-const resolveTxt = async (domain: string): Promise<string> => {
-    let res = "";
-    return dns
-        .resolveTxt(domain)
-        .then((records) => {
-            records.forEach((record) => {
-                record.forEach((segment) => {
-                    if (segment.startsWith("did=")) {
-                        const kvp = segment.split("=");
-                        if (kvp.length >= 2) {
-                            res = kvp[1] as string;
-                        }
-                    }
-                });
-            });
-        })
-        .then(() => {
-            if (res != "") return res;
-
-            throw new Error(`No DID record found at ${domain}`);
-        });
-};
-
-interface PlcDirectoryResponse {
-    id: string;
-    alsoKnownAs: Array<string>;
-    verificationMethod: Array<{
-        id: string;
-        type: string;
-        controller: string;
-        publicKeyMultibase: string;
-    }>;
-    service: Array<{
-        id: string;
-        type: string;
-        serviceEndpoint: string;
-    }>;
-}
-
-const resolveDidToServiceUrl = async (did: string) => {
-    const req = new Request(`https://plc.directory/${did}`);
-    const res = await fetch(req);
-    const data = (await res.json()) as PlcDirectoryResponse;
-    return data.service[0] ? data.service[0].serviceEndpoint : "";
-};
-
-interface ComAtprotoLexiconSchemaResponse {
-    id: string;
-    $type: string;
-    lexicond: number;
-    defs: unknown; // TODO: actually implement this
-}
-
-interface ComAtprotoRepoListRecordsResponse {
-    uri: string;
-    cid: string;
-    value: ComAtprotoLexiconSchemaResponse;
-}
-
-const listLexicons = async (did: string, serviceEndpoint: string) => {
-    const req = new Request(
-        `${serviceEndpoint}/xrpc/com.atproto.repo.listRecords?repo=${did}&collection=com.atproto.lexicon.schema`,
-    );
-    const res = await fetch(req);
-    const data = (await res.json()) as Array<ComAtprotoRepoListRecordsResponse>;
-    return data;
 };
 
 const main = async () => {
@@ -101,8 +38,6 @@ const main = async () => {
             return await listLexicons(pairs.did, pairs.serviceUrl);
         }),
     );
-
-    console.log(lexicons);
 };
 
 main().then();
