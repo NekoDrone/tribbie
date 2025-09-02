@@ -1,8 +1,5 @@
-import {
-    listLexicons,
-    resolveDidToServiceUrl,
-    resolveTxt,
-} from "@/lib/helpers";
+import { listLexicons } from "@/lib/helpers";
+import { resolveDidToServiceUrl, resolveTxt } from "@/lib/helpers/resolver";
 
 const lexiconCollections = {
     APP_BSKY: "app.bsky.actor",
@@ -38,7 +35,9 @@ const main = async () => {
         }),
     );
 
-    console.log(lexicons[0]?.records[0]?.value.defs.main?.description);
+    console.log(
+        lexicons[0]?.records[0]?.value.defs.main?.output.schema.properties,
+    );
 };
 
 main().then();

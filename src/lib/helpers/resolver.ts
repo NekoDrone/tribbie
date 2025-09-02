@@ -1,8 +1,5 @@
 import * as dns from "dns/promises";
-import type {
-    ComAtprotoRepoListRecordsResponse,
-    PlcDirectoryResponse,
-} from "@/lib/types";
+import type { PlcDirectoryResponse } from "@/lib/types";
 
 export const resolveTxt = async (domain: string): Promise<string> => {
     let res = "";
@@ -32,13 +29,4 @@ export const resolveDidToServiceUrl = async (did: string) => {
     const res = await fetch(req);
     const data = (await res.json()) as PlcDirectoryResponse;
     return data.service[0] ? data.service[0].serviceEndpoint : "";
-};
-
-export const listLexicons = async (did: string, serviceEndpoint: string) => {
-    const req = new Request(
-        `${serviceEndpoint}/xrpc/com.atproto.repo.listRecords?repo=${did}&collection=com.atproto.lexicon.schema&limit=100`,
-    );
-    const res = await fetch(req);
-    const data = (await res.json()) as ComAtprotoRepoListRecordsResponse;
-    return data;
 };
