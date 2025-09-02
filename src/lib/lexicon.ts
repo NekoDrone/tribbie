@@ -8,14 +8,6 @@ export interface LexDefinition {
     description: string;
 }
 
-export interface SchemaDef {
-    type: string;
-    required: Array<string>;
-    properties: SchemaProperties;
-}
-
-export type SchemaProperties = Record<string, PropertiesDef>;
-
 interface BasePropertiesDef {
     type:
         | "null"
