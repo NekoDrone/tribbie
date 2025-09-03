@@ -49,12 +49,11 @@ const main = async () => {
         if (exampleRecord) {
             const exampleLexicon = exampleRecord.value.defs.main;
             if (exampleLexicon.type == "query") {
-                const exampleQueryLexicon = exampleLexicon;
                 if (
-                    exampleQueryLexicon.output.schema &&
-                    exampleQueryLexicon.output.schema.type == "object"
+                    exampleLexicon.output.schema &&
+                    exampleLexicon.output.schema.type == "object"
                 )
-                    console.log(exampleQueryLexicon.output.schema.properties);
+                    console.log(exampleLexicon.output.schema.properties);
             }
         }
     }
