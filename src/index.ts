@@ -35,28 +35,60 @@ const main = async () => {
         }),
     );
 
-    const exampleCollection = collections.find((collection) =>
-        collection.records.find(
-            (record) => record.value.defs.main.type == "query",
-        ),
+    const counts = {
+        query: 0,
+        procedure: 0,
+        subscription: 0,
+        record: 0,
+        def: 0,
+    };
+
+    collections.forEach((collection) => {
+        const records = collection.records;
+        records.forEach((record) => {
+            const defs = record.value.defs;
+            Object.values(defs).forEach((record) => {
+                switch (record.type) {
+                    case "query":
+                        counts.query++;
+                        break;
+                    case "procedure":
+                        counts.procedure++;
+                        break;
+                    case "subscription":
+                        counts.subscription++;
+                        break;
+                    case "record":
+                        counts.record++;
+                        break;
+                    default:
+                        counts.def++;
+                }
+            });
+        });
+    });
+
+    console.log(
+        "There are",
+        counts.query,
+        "queries in the given collections set.",
     );
-
-    if (exampleCollection) {
-        const exampleRecord = exampleCollection?.records.find(
-            (record) => record.value.defs.main.type == "query",
-        );
-
-        if (exampleRecord) {
-            const exampleLexicon = exampleRecord.value.defs.main;
-            if (exampleLexicon.type == "query") {
-                if (
-                    exampleLexicon.output.schema &&
-                    exampleLexicon.output.schema.type == "object"
-                )
-                    console.log(exampleLexicon.output.schema.properties);
-            }
-        }
-    }
+    console.log(
+        "There are",
+        counts.procedure,
+        "procedures in the given collections set.",
+    );
+    console.log(
+        "There are",
+        counts.subscription,
+        "subscriptions in the given collections set.",
+    );
+    console.log(
+        "There are",
+        counts.record,
+        "records in the given collections set.",
+    );
+    console.log("There are", counts.def, "defs in the given collections set.");
 };
 
 main().then();
