@@ -1,3 +1,4 @@
+import { ObjectField, PossibleObjectFields } from "@/lib/lexicon/fields";
 import { Lexicon } from "@/lib/lexicon/primary";
 
 export interface PlcDirectoryResponse {
@@ -20,7 +21,9 @@ export interface ComAtprotoLexiconSchema {
     id: string;
     $type: string;
     lexicon: number;
-    defs: Record<string, Lexicon> & { main: Lexicon };
+    defs:
+        | (Record<string, Lexicon> & { main?: Lexicon })
+        | Record<string, ObjectField<PossibleObjectFields>>;
 }
 
 export interface ComAtprotoRepoListRecordsResponse {
