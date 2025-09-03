@@ -1,4 +1,4 @@
-import { LexDefinition } from "@/lib/lexicon";
+import { Lexicon } from "@/lib/lexicon/primary";
 
 export interface PlcDirectoryResponse {
     id: string;
@@ -16,18 +16,18 @@ export interface PlcDirectoryResponse {
     }>;
 }
 
-export interface ComAtprotoLexiconSchemaResponse {
+export interface ComAtprotoLexiconSchema {
     id: string;
     $type: string;
     lexicon: number;
-    defs: Record<"main" | string, LexDefinition>;
+    defs: Record<"main" | string, Lexicon>;
 }
 
 export interface ComAtprotoRepoListRecordsResponse {
     records: Array<{
         uri: string;
         cid: string;
-        value: ComAtprotoLexiconSchemaResponse;
+        value: ComAtprotoLexiconSchema;
     }>;
     cursor: string;
 }

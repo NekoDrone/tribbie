@@ -1,14 +1,4 @@
-export interface LexDefinition {
-    type: "query" | "procedure" | "subscription" | "record";
-    output: {
-        schema: ObjectPropertiesDef<PropertiesDef>;
-        encoding: string;
-    };
-    parameters: ParamsPropertiesDef<ParamsRestrictedProperties>;
-    description: string;
-}
-
-interface BasePropertiesDef {
+export interface BaseField {
     type:
         | "null"
         | "boolean"
@@ -32,12 +22,12 @@ interface BasePropertiesDef {
  * A `null` value.
  * See on {@link https://atproto.com/specs/lexicon#null|ATProto Docs}.
  */
-export interface NullPropertiesDef extends BasePropertiesDef {
+export interface NullField extends BaseField {
     type: "null";
 }
 
 // boolean properties
-interface BaseBoolPropertiesDef extends BasePropertiesDef {
+interface BaseBoolField extends BaseField {
     type: "boolean";
     default?: boolean;
     const?: boolean;
@@ -47,7 +37,7 @@ interface BaseBoolPropertiesDef extends BasePropertiesDef {
  * A `true` or `false` value with a given `default` value for this field.
  * See on {@link https://atproto.com/specs/lexicon#boolean|ATProto Docs}.
  */
-export interface BoolDefaultPropertiesDef extends BaseBoolPropertiesDef {
+export interface BoolDefaultField extends BaseBoolField {
     default: boolean;
     const?: never;
 }
@@ -56,7 +46,7 @@ export interface BoolDefaultPropertiesDef extends BaseBoolPropertiesDef {
  * A `true` or `false` value with a fixed (constant) value for this field.
  * See on {@link https://atproto.com/specs/lexicon#boolean|ATProto Docs}.
  */
-export interface BoolConstPropertiesDef extends BaseBoolPropertiesDef {
+export interface BoolConstField extends BaseBoolField {
     default?: never;
     const: boolean;
 }
@@ -65,13 +55,13 @@ export interface BoolConstPropertiesDef extends BaseBoolPropertiesDef {
  * A `true` or `false` value.
  * See on {@link https://atproto.com/specs/lexicon#boolean|ATProto Docs}.
  */
-export interface BoolPropertiesDef extends BaseBoolPropertiesDef {
+export interface BoolField extends BaseBoolField {
     default?: never;
     const?: never;
 }
 
 // integer properties
-interface BaseIntegerPropertiesDef extends BasePropertiesDef {
+interface BaseIntegerField extends BaseField {
     type: "integer";
     minimum?: number;
     maximum?: number;
@@ -82,7 +72,7 @@ interface BaseIntegerPropertiesDef extends BasePropertiesDef {
  * A signed integer number with a given `default` value for this field.
  * See on {@link https://atproto.com/specs/lexicon#integer|ATProto Docs}.
  */
-export interface IntegerDefaultPropertiesDef extends BaseIntegerPropertiesDef {
+export interface IntegerDefaultField extends BaseIntegerField {
     default: number;
     const?: never;
 }
@@ -91,7 +81,7 @@ export interface IntegerDefaultPropertiesDef extends BaseIntegerPropertiesDef {
  * A signed integer number with a fixed (constant) value for this field.
  * See on {@link https://atproto.com/specs/lexicon#integer|ATProto Docs}.
  */
-export interface IntegerConstPropertiesDef extends BaseIntegerPropertiesDef {
+export interface IntegerConstField extends BaseIntegerField {
     default?: never;
     const: number;
 }
@@ -100,13 +90,13 @@ export interface IntegerConstPropertiesDef extends BaseIntegerPropertiesDef {
  * A signed integer number.
  * See on {@link https://atproto.com/specs/lexicon#integer|ATProto Docs}.
  */
-export interface IntegerPropertiesDef extends BaseIntegerPropertiesDef {
+export interface IntegerField extends BaseIntegerField {
     default?: never;
     const?: never;
 }
 
 // string properties
-interface BaseStringPropertiesDef extends BasePropertiesDef {
+interface BaseStringField extends BaseField {
     type: "string";
     format?:
         | "at-identifier"
@@ -134,7 +124,7 @@ interface BaseStringPropertiesDef extends BasePropertiesDef {
  * A Unicode string with a given `default` value for this field. For non-Unicode encodings, use `bytes` instead.
  * See on {@link https://atproto.com/specs/lexicon#string|ATProto Docs}.
  */
-export interface StringDefaultPropertiesDef extends BaseStringPropertiesDef {
+export interface StringDefaultField extends BaseStringField {
     default: string;
     const?: never;
 }
@@ -143,7 +133,7 @@ export interface StringDefaultPropertiesDef extends BaseStringPropertiesDef {
  * A Unicode string with a fixed (constant) value for this field. For non-Unicode encodings, use `bytes` instead.
  * See on {@link https://atproto.com/specs/lexicon#string|ATProto Docs}.
  */
-export interface StringConstPropertiesDef extends BaseStringPropertiesDef {
+export interface StringConstField extends BaseStringField {
     default?: never;
     const: string;
 }
@@ -152,7 +142,7 @@ export interface StringConstPropertiesDef extends BaseStringPropertiesDef {
  * A Unicode string with a given `default` value for this field.
  * See on {@link https://atproto.com/specs/lexicon#string|ATProto Docs}.
  */
-export interface StringPropertiesDef extends BaseStringPropertiesDef {
+export interface StringField extends BaseStringField {
     default?: never;
     const?: never;
 }
@@ -162,7 +152,7 @@ export interface StringPropertiesDef extends BaseStringPropertiesDef {
  * A collection of raw bytes with no encoding.
  * See on {@link https://atproto.com/specs/lexicon#bytes|ATProto Docs}.
  */
-export interface BytesPropertiesDef extends BasePropertiesDef {
+export interface BytesField extends BaseField {
     type: "bytes";
     minLength?: number;
     maxLength?: number;
@@ -172,7 +162,7 @@ export interface BytesPropertiesDef extends BasePropertiesDef {
 /**
  * See on {@link https://atproto.com/specs/lexicon#cid-link|ATProto Docs}
  */
-export interface CidLinkPropertiesDef extends BasePropertiesDef {
+export interface CidLinkField extends BaseField {
     type: "cid-link";
     // TODO: what.
 }
@@ -182,8 +172,7 @@ export interface CidLinkPropertiesDef extends BasePropertiesDef {
  * A collection of elements.
  * See on {@link https://atproto.com/specs/lexicon#array|ATProto Docs}
  */
-export interface ArrayPropertiesDef<T extends PropertiesDef>
-    extends BasePropertiesDef {
+export interface ArrayField<T extends PossibleObjectFields> extends BaseField {
     type: "array";
     items: T;
     minLength?: number;
@@ -194,8 +183,7 @@ export interface ArrayPropertiesDef<T extends PropertiesDef>
  * A generic object schema which can be nested inside other definitions by reference.
  * See on {@link https://atproto.com/specs/lexicon#object|ATProto Docs}
  */
-export interface ObjectPropertiesDef<T extends PropertiesDef>
-    extends BasePropertiesDef {
+export interface ObjectField<T extends PossibleObjectFields> extends BaseField {
     type: "object";
     properties: Record<string, T>;
     required?: Array<string>;
@@ -206,35 +194,24 @@ export interface ObjectPropertiesDef<T extends PropertiesDef>
  * A blob of binary data. `accept` should be a valid MIME type
  * See on {@link https://atproto.com/specs/lexicon#blob|ATProto Docs}
  */
-export interface BlobPropertiesDef extends BasePropertiesDef {
+export interface BlobField extends BaseField {
     type: "blob";
     accept?: Array<string>;
     maxSize?: number;
 }
 
-type ParamsRestrictedProperties =
-    | BoolConstPropertiesDef
-    | BoolDefaultPropertiesDef
-    | BoolPropertiesDef
-    | IntegerConstPropertiesDef
-    | IntegerDefaultPropertiesDef
-    | IntegerPropertiesDef
-    | StringDefaultPropertiesDef
-    | StringConstPropertiesDef
-    | StringPropertiesDef
-    | ArrayPropertiesDef<
-          | BoolConstPropertiesDef
-          | BoolDefaultPropertiesDef
-          | BoolPropertiesDef
-          | IntegerConstPropertiesDef
-          | IntegerDefaultPropertiesDef
-          | IntegerPropertiesDef
-          | StringDefaultPropertiesDef
-          | StringConstPropertiesDef
-          | StringPropertiesDef
-          | UnknownPropertiesDef
-      >
-    | UnknownPropertiesDef;
+export type ParamsRestrictedFields =
+    | BoolConstField
+    | BoolDefaultField
+    | BoolField
+    | IntegerConstField
+    | IntegerDefaultField
+    | IntegerField
+    | StringDefaultField
+    | StringConstField
+    | StringField
+    | ArrayField<ParamsRestrictedFields>
+    | UnknownField;
 
 /**
  * A more limited scope of the `object` type.
@@ -242,8 +219,8 @@ type ParamsRestrictedProperties =
  * These map to HTTP query params.
  * See on {@link https://atproto.com/specs/lexicon#params|ATProto Docs}
  */
-export interface ParamsPropertiesDef<T extends ParamsRestrictedProperties>
-    extends BasePropertiesDef {
+export interface ParamsField<T extends ParamsRestrictedFields>
+    extends BaseField {
     type: "params";
     required: Array<string>;
     properties: Record<string, T>;
@@ -253,7 +230,7 @@ export interface ParamsPropertiesDef<T extends ParamsRestrictedProperties>
  * An empty data value which exists only to be referenced by name.
  * See on {@link https://atproto.com/specs/lexicon#token|ATProto Docs}
  */
-export interface TokenPropertiesDef extends BasePropertiesDef {
+export interface TokenField extends BaseField {
     type: "token";
 }
 
@@ -261,7 +238,7 @@ export interface TokenPropertiesDef extends BasePropertiesDef {
  * A reference to another schema definition.
  * See on {@link https://atproto.com/specs/lexicon#ref|ATProto Docs}
  */
-export interface RefPropertiesDef extends BasePropertiesDef {
+export interface RefField extends BaseField {
     type: "ref";
     ref: string;
 }
@@ -270,7 +247,7 @@ export interface RefPropertiesDef extends BasePropertiesDef {
  * A union of multiple possible types that could be present at this location in the schema.
  * See on {@link https://atproto.com/specs/lexicon#union|ATProto Docs}
  */
-export interface UnionPropertiesDef extends BasePropertiesDef {
+export interface UnionField extends BaseField {
     type: "union";
     refs: Array<string>;
     closed?: boolean;
@@ -282,29 +259,29 @@ export interface UnionPropertiesDef extends BasePropertiesDef {
  * May contain a `$type` field indicating the schema of the data.
  * See on {@link https://atproto.com/specs/lexicon#unknown|ATProto Docs}
  */
-export interface UnknownPropertiesDef extends BasePropertiesDef {
+export interface UnknownField extends BaseField {
     type: "unknown";
-    $type: unknown;
+    $type?: unknown;
 }
 
-export type PropertiesDef =
-    | NullPropertiesDef
-    | BoolDefaultPropertiesDef
-    | BoolConstPropertiesDef
-    | BoolPropertiesDef
-    | IntegerDefaultPropertiesDef
-    | IntegerConstPropertiesDef
-    | IntegerPropertiesDef
-    | StringDefaultPropertiesDef
-    | StringConstPropertiesDef
-    | StringPropertiesDef
-    | BytesPropertiesDef
-    | CidLinkPropertiesDef
-    | ArrayPropertiesDef<PropertiesDef>
-    | ObjectPropertiesDef<PropertiesDef>
-    | BlobPropertiesDef
-    | ParamsPropertiesDef<ParamsRestrictedProperties>
-    | TokenPropertiesDef
-    | RefPropertiesDef
-    | UnionPropertiesDef
-    | UnknownPropertiesDef;
+export type PossibleObjectFields =
+    | NullField
+    | BoolDefaultField
+    | BoolConstField
+    | BoolField
+    | IntegerDefaultField
+    | IntegerConstField
+    | IntegerField
+    | StringDefaultField
+    | StringConstField
+    | StringField
+    | BytesField
+    | CidLinkField
+    | ArrayField<PossibleObjectFields>
+    | ObjectField<PossibleObjectFields>
+    | BlobField
+    | ParamsField<ParamsRestrictedFields>
+    | TokenField
+    | RefField
+    | UnionField
+    | UnknownField;

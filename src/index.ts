@@ -29,15 +29,35 @@ const main = async () => {
         }),
     );
 
-    const lexicons = await Promise.all(
+    const collections = await Promise.all(
         serviceUrls.map(async (pairs) => {
             return await listLexicons(pairs.did, pairs.serviceUrl);
         }),
     );
 
-    console.log(
-        lexicons[0]?.records[0]?.value.defs.main?.output.schema.properties,
+    const exampleCollection = collections.find((collection) =>
+        collection.records.find(
+            (record) => record.value.defs.main.type == "query",
+        ),
     );
+
+    if (exampleCollection) {
+        const exampleRecord = exampleCollection?.records.find(
+            (record) => record.value.defs.main.type == "query",
+        );
+
+        if (exampleRecord) {
+            const exampleLexicon = exampleRecord.value.defs.main;
+            if (exampleLexicon.type == "query") {
+                const exampleQueryLexicon = exampleLexicon;
+                if (
+                    exampleQueryLexicon.output.schema &&
+                    exampleQueryLexicon.output.schema.type == "object"
+                )
+                    console.log(exampleQueryLexicon.output.schema.properties);
+            }
+        }
+    }
 };
 
 main().then();
