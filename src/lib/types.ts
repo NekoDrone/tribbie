@@ -20,7 +20,7 @@ export interface ComAtprotoLexiconSchema {
     id: string;
     $type: string;
     lexicon: number;
-    defs: Record<"main" | string, Lexicon>;
+    defs: Record<string, Lexicon> & { main: Lexicon };
 }
 
 export interface ComAtprotoRepoListRecordsResponse {
