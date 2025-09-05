@@ -19,7 +19,7 @@ export interface PlcDirectoryResponse {
 
 export interface ComAtprotoLexiconSchema {
     id: string;
-    $type: string;
+    $type: "com.atproto.lexicon.schema";
     lexicon: number;
     defs:
         | (Record<string, Lexicon> & { main?: Lexicon })
