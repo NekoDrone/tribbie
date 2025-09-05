@@ -15,7 +15,7 @@ interface BaseLexicon {
 interface Method extends BaseLexicon {
     type: "query" | "procedure" | "subscription";
     parameters?: ParamsField<ParamsRestrictedFields>;
-    errors: {
+    errors?: {
         name: string;
         description?: string;
     };
@@ -23,7 +23,7 @@ interface Method extends BaseLexicon {
 
 interface QueryOrProcedure extends Method {
     type: "query" | "procedure";
-    output: {
+    output?: {
         description?: string;
         encoding: "application/json" | string;
         schema?: Extract<
@@ -39,7 +39,7 @@ export interface Query extends QueryOrProcedure {
 
 export interface Procedure extends QueryOrProcedure {
     type: "procedure";
-    input: {
+    input?: {
         description?: string;
         encoding: "application/json" | string;
         schema?: Extract<
